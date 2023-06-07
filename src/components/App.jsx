@@ -1,100 +1,76 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Loader from './Loader/Loader';
 import Button from './Button/Button';
 import Modal from './Modal/Modal';
 import s from "./css/styles..module.css"
+// import { prettyFormat } from '@testing-library/react';
 
-export class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      searchQuery: '',
-      images: [],
-      selectedImage: null,
-      page: 1,
-		isLoading: false,
-	  totalHits: 0,
-    };
-  }
+export const App = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [images, setImages] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [totalHits, setTotalHits] = useState(0);
 
-  componentDidMount() {
-    this.fetchImages();
-  }
+  useEffect(() => {
+    fetchImages();
+  }, [searchQuery, page]);
 
-  componentDidUpdate(prevProps, prevState) {
-    if (
-      prevState.searchQuery !== this.state.searchQuery ||
-      prevState.page !== this.state.page
-    ) {
-      this.fetchImages();
-    }
-  }
-
-  fetchImages = async () => {
-    const { searchQuery, page } = this.state;
-
+  const fetchImages = async () => {
     if (searchQuery === '') return;
 
     try {
-      this.setState({ isLoading: true });
+      setIsLoading(true);
       const response = await fetch(
         `https://pixabay.com/api/?q=${searchQuery}&page=${page}&key=36279909-cfd4bce87e67b5b9044183ce0&image_type=photo&orientation=horizontal&per_page=12`
       );
       const data = await response.json();
-      this.setState((prevState) => ({
-		  images: [...prevState.images, ...data.hits],
-		  totalHits: data.totalHits,
-      }));
+      setImages((prevImages) => [...prevImages, ...data.hits]);
+      setTotalHits(data.totalHits);
     } catch (error) {
       console.error('Error fetching images:', error);
     } finally {
-      this.setState({ isLoading: false });
+      setIsLoading(false);
     }
   };
 
-  handleSearchSubmit = (query) => {
-    this.setState({
-      searchQuery: query,
-      images: [],
-		page: 1,
-	  totalHits: 0,
-    });
+  const handleSearchSubmit = (query) => {
+    setSearchQuery(query);
+    setImages([]);
+    setPage(1);
+    setTotalHits(0);
   };
 
-  handleLoadMore = () => {
-    this.setState((prevState) => ({
-      page: prevState.page + 1,
-    }));
+  const handleLoadMore = () => {
+    setPage((prevPage) => prevPage + 1);
   };
 
-  handleImageClick = (image) => {
-    this.setState({ selectedImage: image });
+  const handleImageClick = (image) => {
+    setSelectedImage(image);
   };
 
-  handleModalClose = () => {
-    this.setState({ selectedImage: null });
+  const handleModalClose = () => {
+    setSelectedImage(null);
   };
 
-  render() {
-	  const { images, isLoading, selectedImage, totalHits, page } = this.state;
-	  const showLoadMoreButton = images.length > 0 && !isLoading && totalHits > page*12
+  const showLoadMoreButton = images.length > 0 && !isLoading && totalHits > page * 12;
 
     return (
       <div className={s.App}>
-        <Searchbar onSubmitHandler={this.handleSearchSubmit} />
-        <ImageGallery images={images} onImageClick={this.handleImageClick} />
+        <Searchbar onSubmitHandler={handleSearchSubmit} />
+        <ImageGallery images={images} onImageClick={handleImageClick} />
         {isLoading && <Loader />}
 			{images.length > 0 && !isLoading}
-          {showLoadMoreButton && <Button onClick={this.handleLoadMore} />}
+          {showLoadMoreButton && <Button onClick={handleLoadMore} />}
         
         {selectedImage && (
-          <Modal imageUrl={selectedImage.largeImageURL} onClose={this.handleModalClose} />
+          <Modal imageUrl={selectedImage.largeImageURL} onClose={handleModalClose} />
         )} 
       </div>
     );
-  }
 }
 
 export default App;

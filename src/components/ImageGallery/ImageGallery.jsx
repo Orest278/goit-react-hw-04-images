@@ -1,11 +1,8 @@
-import { Component } from 'react'
+// import { Component } from 'react'
 import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem'
 import s from "../css/styles..module.css"
 
-class ImageGallery extends Component {
-	
-	render() {
-		const { images, onImageClick } = this.props;
+const ImageGallery =({images, onImageClick}) => {
 		return (
 			<ul className={s.ImageGallery}>
 			{images.map((image) => (
@@ -17,7 +14,5 @@ class ImageGallery extends Component {
         ))}
 		</ul>
 		)
-		
-	}
 }
 export default ImageGallery
