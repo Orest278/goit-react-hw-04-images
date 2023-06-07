@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import s from "../css/styles..module.css"
+import PropTypes from 'prop-types'
 
 const Searchbar = ({onSubmitHandler}) =>  {
   const [name, setName] = useState('');
@@ -38,6 +39,10 @@ const Searchbar = ({onSubmitHandler}) =>  {
         </form>
       </header>
     );
+}
+
+Searchbar.protoType = {
+  onSubmitHandler: PropTypes.func.isRequired,
 }
 
 export default Searchbar

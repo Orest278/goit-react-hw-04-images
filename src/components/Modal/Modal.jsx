@@ -1,5 +1,6 @@
 import { useEffect, useCallback } from 'react';
 import s from '../css/styles..module.css';
+import PropTypes from 'prop-types';
 
 export const Modal = ({ modalImage, closeModal }) => {
   const closeByBackdrop = useCallback((event) => {
@@ -29,6 +30,14 @@ export const Modal = ({ modalImage, closeModal }) => {
       </div>
     </div>
   );
+};
+
+Modal.propTypes = {
+  modalImage: PropTypes.shape({
+    src: PropTypes.string.isRequired,
+    alt: PropTypes.string.isRequired,
+  }).isRequired,
+  closeModal: PropTypes.func.isRequired,
 };
 
 export default Modal;

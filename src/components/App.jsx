@@ -5,6 +5,7 @@ import Loader from './Loader/Loader';
 import Button from './Button/Button';
 import Modal from './Modal/Modal';
 import s from "./css/styles..module.css"
+import PropTypes from 'prop-types';
 
 export const App = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -68,6 +69,14 @@ export const App = () => {
       )}
     </div>
   );
+}
+
+Modal.PropTypes = {
+  modalImage: PropTypes.shape({
+    src: PropTypes.string.isRequired,
+    alt: PropTypes.string.isRequired,
+  }).isRequired,
+  closeModal: PropTypes.func.isRequired,
 }
 
 export default App;
