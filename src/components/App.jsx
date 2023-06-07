@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Loader from './Loader/Loader';
 import Button from './Button/Button';
 import Modal from './Modal/Modal';
 import s from "./css/styles..module.css"
-// import { prettyFormat } from '@testing-library/react';
 
 export const App = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -15,11 +14,7 @@ export const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [totalHits, setTotalHits] = useState(0);
 
-  useEffect(() => {
-    fetchImages();
-  }, [searchQuery, page]);
-
-  const fetchImages = async () => {
+  const fetchImages = useCallback(async () => {
     if (searchQuery === '') return;
 
     try {
@@ -35,7 +30,11 @@ export const App = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [searchQuery, page]);
+
+  useEffect(() => {
+    fetchImages();
+  }, [fetchImages]);
 
   const handleSearchSubmit = (query) => {
     setSearchQuery(query);
@@ -58,19 +57,17 @@ export const App = () => {
 
   const showLoadMoreButton = images.length > 0 && !isLoading && totalHits > page * 12;
 
-    return (
-      <div className={s.App}>
-        <Searchbar onSubmitHandler={handleSearchSubmit} />
-        <ImageGallery images={images} onImageClick={handleImageClick} />
-        {isLoading && <Loader />}
-			{images.length > 0 && !isLoading}
-          {showLoadMoreButton && <Button onClick={handleLoadMore} />}
-        
-        {selectedImage && (
-          <Modal imageUrl={selectedImage.largeImageURL} onClose={handleModalClose} />
-        )} 
-      </div>
-    );
+  return (
+    <div className={s.App}>
+      <Searchbar onSubmitHandler={handleSearchSubmit} />
+      <ImageGallery images={images} onImageClick={handleImageClick} />
+      {isLoading && <Loader />}
+      {showLoadMoreButton && <Button onClick={handleLoadMore} />}
+      {selectedImage && (
+        <Modal imageUrl={selectedImage.largeImageURL} onClose={handleModalClose} />
+      )}
+    </div>
+  );
 }
 
 export default App;
